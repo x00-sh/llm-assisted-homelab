@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  cloudflared:
+    image: docker.io/cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    restart: unless-stopped
+    networks:
+      - homelab
+    env_file:
+      - ../.env
+
+  traefik:
+    image: docker.io/traefik:v2.10
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - homelab
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/podman/podman.sock:/var/run/docker.sock:ro
+      - ./traefik/data:/etc/traefik
+      - ./traefik/letsencrypt:/letsencrypt
+    environment:
+      - TZ=UTC
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=http"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.middlewares.traefik-auth.basicauth.users=${ADMIN_USERS}"
+      - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
+      - "traefik.http.routers.traefik-secure.entrypoints=https"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.${DOMAIN}`)"
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
+      - "traefik.http.routers.traefik-secure.tls=true"
+      - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.services.traefik.loadbalancer.server.scheme=http"
+
+  headscale:
+    image: docker.io/headscale/headscale:latest
+    container_name: headscale
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - ./headscale/config:/etc/headscale
+      - ./headscale/data:/var/lib/headscale
+    environment:
+      - TZ=UTC
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.headscale.entrypoints=http"
+      - "traefik.http.routers.headscale.rule=Host(`headscale.${DOMAIN}`)"
+      - "traefik.http.middlewares.headscale-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.headscale.middlewares=headscale-https-redirect"
+      - "traefik.http.routers.headscale-secure.entrypoints=https"
+      - "traefik.http.routers.headscale-secure.rule=Host(`headscale.${DOMAIN}`)"
+      - "traefik.http.routers.headscale-secure.tls=true"
+      - "traefik.http.routers.headscale-secure.tls.certresolver=cloudflare"
+
+  portainer:
+    image: docker.io/portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    networks:
+      - homelab
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/podman/podman.sock:/var/run/docker.sock:ro
+      - ./portainer/data:/data
+    environment:
+      - TZ=UTC
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.entrypoints=http"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.${DOMAIN}`)"
+      - "traefik.http.middlewares.portainer-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.portainer.middlewares=portainer-https-redirect"
+      - "traefik.http.routers.portainer-secure.entrypoints=https"
+      - "traefik.http.routers.portainer-secure.rule=Host(`portainer.${DOMAIN}`)"
+      - "traefik.http.routers.portainer-secure.tls=true"
+      - "traefik.http.routers.portainer-secure.tls.certresolver=cloudflare"
+
+networks:
+  homelab:
+    name: homelab
+    driver: bridge 

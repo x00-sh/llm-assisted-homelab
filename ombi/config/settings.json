@@ -1,0 +1,47 @@
+{
+  "OmbiSettings": {
+    "BaseUrl": "https://ombi.${DOMAIN}",
+    "CollectAnalyticData": false,
+    "Wizard": true
+  },
+  "SonarrSettings": {
+    "Enabled": true,
+    "ApiKey": "",
+    "QualityProfile": "HD-1080p",
+    "RootPath": "/tv",
+    "QualityProfileAnime": "HD-1080p",
+    "RootPathAnime": "/tv",
+    "AddOnly": false,
+    "SeasonFolders": true,
+    "LanguageProfile": 1,
+    "LanguageProfileAnime": 1,
+    "ScanForAvailability": true,
+    "Ssl": false,
+    "SubDir": "",
+    "Ip": "100.64.0.3",
+    "Port": 8989
+  },
+  "RadarrSettings": {
+    "Enabled": true,
+    "ApiKey": "",
+    "DefaultQualityProfile": "HD-1080p",
+    "DefaultRootPath": "/movies",
+    "AddOnly": false,
+    "MinimumAvailability": "Released",
+    "ScanForAvailability": true,
+    "Ssl": false,
+    "SubDir": "",
+    "Ip": "100.64.0.4",
+    "Port": 7878
+  },
+  "JellyfinSettings": {
+    "Enabled": true,
+    "ApiKey": "",
+    "AdministratorId": "",
+    "Ip": "100.64.0.6",
+    "Port": 8096,
+    "EnableEpisodeSearching": true,
+    "Ssl": false,
+    "SubDir": ""
+  }
+} 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Config>
+  <LogLevel>info</LogLevel>
+  <UpdateMechanism>BuiltIn</UpdateMechanism>
+  <Branch>main</Branch>
+  <BindAddress>*</BindAddress>
+  <Port>8989</Port>
+  <SslPort>9898</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <LaunchBrowser>False</LaunchBrowser>
+  <AuthenticationMethod>None</AuthenticationMethod>
+  <ApiKey>${SONARR_API_KEY}</ApiKey>
+  <UrlBase></UrlBase>
+  <UpdateAutomatically>True</UpdateAutomatically>
+  <DownloadClientWorkingFolders>/downloads</DownloadClientWorkingFolders>
+  <DownloadClients>
+    <DownloadClient>
+      <Name>SABnzbd</Name>
+      <Enable>True</Enable>
+      <Protocol>usenet</Protocol>
+      <Host>sabnzbd</Host>
+      <Port>8080</Port>
+      <ApiKey>${SABNZBD_API_KEY}</ApiKey>
+      <Username></Username>
+      <Password></Password>
+      <Category>tv-sonarr</Category>
+      <RecentPriority>0</RecentPriority>
+      <OlderPriority>0</OlderPriority>
+      <AddPaused>False</AddPaused>
+      <UseSsl>False</UseSsl>
+    </DownloadClient>
+  </DownloadClients>
+  <CompletedDownloadHandling>
+    <Enable>True</Enable>
+    <Remove>True</Remove>
+  </CompletedDownloadHandling>
+</Config> 

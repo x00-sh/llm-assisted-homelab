@@ -1,0 +1,45 @@
+{
+  "groups": {
+    "group:admin": "${ADMIN_USERS}",
+    "group:media": "${MEDIA_USERS}",
+    "group:guest": "${GUEST_USERS}",
+    "group:media-admin": "${MEDIA_ADMIN_USERS}"
+  },
+  "hosts": {
+    "traefik": "100.64.0.1",
+    "headscale": "100.64.0.2",
+    "sonarr": "100.64.0.3",
+    "radarr": "100.64.0.4",
+    "sabnzbd": "100.64.0.5",
+    "jellyfin": "100.64.0.6",
+    "portainer": "100.64.0.7",
+    "ombi": "100.64.0.8",
+    "bazarr": "100.64.0.9"
+  },
+  "acls": [
+    // Admin group has access to everything
+    {
+      "action": "accept",
+      "src": ["group:admin"],
+      "dst": ["*:*"]
+    },
+    // Media admin group has access to media management services
+    {
+      "action": "accept",
+      "src": ["group:media-admin"],
+      "dst": ["sonarr:*", "radarr:*", "sabnzbd:*", "jellyfin:*", "ombi:*", "bazarr:*"]
+    },
+    // Media group can only access Jellyfin and Ombi
+    {
+      "action": "accept",
+      "src": ["group:media"],
+      "dst": ["jellyfin:*", "ombi:*"]
+    },
+    // Guest group has no access by default
+    {
+      "action": "accept",
+      "src": ["group:guest"],
+      "dst": []
+    }
+  ]
+} 

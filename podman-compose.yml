@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # Include infrastructure services
+  cloudflared:
+    extends:
+      file: ./compose/infrastructure/podman-compose.yml
+      service: cloudflared
+
+  traefik:
+    extends:
+      file: ./compose/infrastructure/podman-compose.yml
+      service: traefik
+
+  headscale:
+    extends:
+      file: ./compose/infrastructure/podman-compose.yml
+      service: headscale
+
+  portainer:
+    extends:
+      file: ./compose/infrastructure/podman-compose.yml
+      service: portainer
+
+  # Include media services
+  sonarr:
+    extends:
+      file: ./compose/media/podman-compose.yml
+      service: sonarr
+
+  radarr:
+    extends:
+      file: ./compose/media/podman-compose.yml
+      service: radarr
+
+  sabnzbd:
+    extends:
+      file: ./compose/media/podman-compose.yml
+      service: sabnzbd
+
+  jellyfin:
+    extends:
+      file: ./compose/media/podman-compose.yml
+      service: jellyfin
+
+  ombi:
+    extends:
+      file: ./compose/media/podman-compose.yml
+      service: ombi
+
+  # Include monitoring services
+  prometheus:
+    extends:
+      file: ./compose/monitoring/podman-compose.yml
+      service: prometheus
+
+  grafana:
+    extends:
+      file: ./compose/monitoring/podman-compose.yml
+      service: grafana
+
+  node-exporter:
+    extends:
+      file: ./compose/monitoring/podman-compose.yml
+      service: node-exporter
+
+networks:
+  homelab:
+    name: homelab
+    driver: bridge 
