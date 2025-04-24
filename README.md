@@ -85,20 +85,19 @@ The setup includes Prometheus and Grafana for comprehensive monitoring. All moni
 This project was developed using several AI-powered tools:
 
 ### 🛠️ Tools Used
-- **⌨️ Cursor IDE**: Primary development environment with AI code completion and chat
+- **🔧 Continue Extension**: Primary development environment with AI code completion and chat in VS Code
 - **🔍 Code Search**: Semantic code search for finding relevant code snippets
 - **💻 Terminal Integration**: AI-assisted terminal command execution
-- **🤖 Tabby**: AI-powered code completion and suggestions
-- **🏠 TabbyLM**: Local LLM instance for offline code assistance
+- **🏠 Ollama**: Local LLM instance for offline code assistance
 
 ### 💪 Hardware
 - **🎮 NVIDIA 5090**: GPU-accelerated local model inference
 
 ### 🔄 Development Process
-1. **🔄 Iterative Development**: Using AI to quickly prototype and refine configurations
-2. **⚡ Code Generation**: AI-assisted creation of configuration files and scripts
-3. **📝 Documentation**: AI-assisted writing and updating of documentation
-4. **🔧 Troubleshooting**: AI-powered debugging and problem-solving
+1. 🚀 Iterative Development: Using AI to quickly prototype and refine configurations
+2. ⚡ Code Generation: AI-assisted creation of configuration files and scripts
+3. ✍️ Documentation: AI-assisted writing and updating of documentation
+4. 🔧 Troubleshooting: AI-powered debugging and problem-solving
 
 ### 🎯 AI Assistance Areas
 - Container configuration and networking
@@ -117,3 +116,4 @@ This project was developed using several AI-powered tools:
 - 🔐 All traffic is encrypted via Tailscale
 - 🤖 DNS records are automatically generated when starting services
 - 🔄 DNS records can be regenerated without restarting services 
+

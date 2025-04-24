@@ -16,20 +16,27 @@ check_file() {
     fi
 }
 
+# Source the compose tools script
+source "$(dirname "${BASH_SOURCE[0]}")/compose-tools.sh"
+
 # Get the directory of this script
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )" || handle_error "Failed to get script directory"
-COMPOSE_FILE="$SCRIPT_DIR/../podman-compose.yml"
-CONFIG_FILE="$SCRIPT_DIR/../headscale/config/config.yaml"
 
 # Check if required files exist
+COMPOSE_FILE="$SCRIPT_DIR/../podman-compose.yml"
+CONFIG_FILE="$SCRIPT_DIR/../headscale/config/config.yaml"
 check_file "$COMPOSE_FILE"
 check_file "$CONFIG_FILE"
+
+# Find the compose command
+COMPOSE_CMD=$(get_compose_tool) || handle_error "Failed to determine container orchestration tool."
+echo "Using $COMPOSE_CMD as container orchestration tool"
 
 # Function to generate DNS records
 generate_dns_records() {
     local ip_base="100.64.0"
     local ip_counter=3  # Start at 3 since 1 and 2 are reserved
-    
+
     # Start of DNS records section with fixed IPs
     echo "  extra_records:"
     echo "    - name: \"traefik\""
@@ -38,7 +45,7 @@ generate_dns_records() {
     echo "    - name: \"headscale\""
     echo "      type: \"A\""
     echo "      value: \"${ip_base}.2\""
-    
+
     # Read services from compose file
     while IFS= read -r line; do
         if [[ $line =~ ^[[:space:]]*([a-zA-Z0-9_-]+): ]]; then
@@ -63,11 +70,11 @@ cp "$CONFIG_FILE" "$BACKUP_FILE" || handle_error "Failed to create backup of con
 
 # Update config file
 awk -v new_records="$NEW_DNS_RECORDS" '
-    /^  extra_records:/ { 
-        print new_records; 
-        while (getline && /^    - name:/) { continue; } 
-        if ($0 !~ /^  extra_records:/) print $0; 
-        next 
+    /^  extra_records:/ {
+        print new_records;
+        while (getline && /^    - name:/) { continue; }
+        if ($0 !~ /^  extra_records:/) print $0;
+        next
     }
     { print }
 ' "$CONFIG_FILE" > "$CONFIG_FILE.tmp" || handle_error "Failed to update config file"
@@ -81,13 +88,22 @@ fi
 # Replace original file with temp file
 mv "$CONFIG_FILE.tmp" "$CONFIG_FILE" || handle_error "Failed to replace config file"
 
+# Check if Headscale is running before attempting restart
+if ! $COMPOSE_CMD ps | grep -q "headscale.*Up"; then
+    echo "Headscale container not found or not running, will start with the stack"
+else
 # Restart Headscale to apply DNS changes
 echo "Restarting Headscale to apply DNS changes..."
-cd "$SCRIPT_DIR/.." && podman-compose restart headscale || handle_error "Failed to restart Headscale"
+cd "$SCRIPT_DIR/.." && $COMPOSE_CMD restart headscale || handle_error "Failed to restart Headscale"
+fi
 
 echo "DNS records updated successfully in $CONFIG_FILE"
 echo "Backup created at $BACKUP_FILE"
+if ! $COMPOSE_CMD ps | grep -q "headscale.*Up"; then
+    echo "Headscale will start with the stack when you run it"
+else
 echo "Headscale restarted to apply changes"
+fi
 echo "Fixed IPs:"
 echo "  - traefik: 100.64.0.1"
 echo "  - headscale: 100.64.0.2"
